@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy 19th Birthday, Issy 🎂</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Lato:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink-light: #fce8f0;
+      --pink-mid:   #f4a0bc;
+      --pink-deep:  #d4607a;
+      --pink-text:  #7a3a52;
+      --pink-muted: #c47d96;
+      --pink-pale:  #fff8fb;
+      --gold:       #f4c040;
+      --green:      #7db87d;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Lato', sans-serif;
+      background: linear-gradient(160deg, #fff0f6 0%, #fde8f2 40%, #fff5fa 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── floating bg petals ── */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* ── main card ── */
+    #app {
+      position: relative;
+      z-index: 1;
+      width: min(480px, 96vw);
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1.5rem 2rem;
+      background: rgba(255,248,251,0.85);
+      border: 1.5px solid #f4c0d4;
+      border-radius: 28px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 48px #f4a0bc33, 0 2px 12px #f4a0bc18;
+      gap: 1.4rem;
+    }
+
+    /* ── scenes ── */
+    .scene {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+      width: 100%;
+      animation: fadein 0.7s ease forwards;
+    }
+    .scene.active { display: flex; }
+
+    /* ── typography ── */
+    .eyebrow {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--pink-muted);
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 2rem;
+      color: var(--pink-deep);
+      text-align: center;
+      line-height: 1.3;
+    }
+    h1 span { font-size: 2.2rem; }
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.7rem;
+      color: var(--pink-deep);
+      text-align: center;
+    }
+
+    /* ── button ── */
+    .btn {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      color: white;
+      background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+      border: none;
+      padding: 0.75rem 2.2rem;
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      box-shadow: 0 6px 22px #f4a0bc55;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover  { transform: translateY(-2px); box-shadow: 0 10px 28px #f4a0bc77; }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.65; cursor: default; }
+
+    /* ── cake ── */
+    .cake-wrap { animation: floatup 3.2s ease-in-out infinite; }
+
+    /* ── bouquet ── */
+    #bouquet-wrap { opacity: 0; }
+    #bouquet-wrap.bloom { animation: bloom 0.95s cubic-bezier(.34,1.56,.64,1) forwards; opacity: 1; }
+
+    /* ── letter card ── */
+    .letter-card {
+      background: var(--pink-pale);
+      border: 1.5px solid #f4c0d4;
+      border-radius: 20px;
+      padding: 2.2rem 1.8rem 1.8rem;
+      position: relative;
+      width: 100%;
+    }
+    .wax-seal {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, #e8789f, #c45078);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.2rem;
+      box-shadow: 0 3px 10px #c4507866;
+    }
+    .letter-from {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #d4a0b8;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .letter-greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: var(--pink-text);
+      margin-bottom: 0.9rem;
+    }
+    .letter-body {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: var(--pink-text);
+      margin-bottom: 0.85rem;
+    }
+    .letter-sig-line {
+      border-top: 1px solid #f4c0d4;
+      padding-top: 1rem;
+      text-align: right;
+    }
+    .letter-sig-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #c45078;
+      opacity: 0.7;
+      margin-bottom: 0.2rem;
+    }
+    .letter-sig-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--pink-deep);
+    }
+
+    /* ── heart ── */
+    .heart { animation: heartpop 1.5s ease-in-out infinite; font-size: 2.8rem; color: var(--pink-deep); }
+
+    /* ── sparkle row ── */
+    .sparkle-row {
+      display: flex; gap: 0.7rem; align-items: center; justify-content: center;
+      font-size: 1rem;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    .footer-note {
+      font-size: 0.78rem;
+      color: #c8a0b4;
+      text-align: center;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── flames ── */
+    .flame { animation: flicker 0.55s ease-in-out infinite; transform-origin: bottom center; }
+    .flame:nth-child(2) { animation-delay: 0.18s; }
+    .flame:nth-child(3) { animation-delay: 0.36s; }
+
+    /* ── keyframes ── */
+    @keyframes flicker {
+      0%,100% { transform: scaleY(1) skewX(0deg); opacity: 1; }
+      25%      { transform: scaleY(1.15) skewX(-4deg); opacity: .85; }
+      75%      { transform: scaleY(.88) skewX(3deg); opacity: .95; }
+    }
+    @keyframes floatup {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-10px); }
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bloom {
+      0%   { transform: scale(0) rotate(-8deg); opacity: 0; }
+      65%  { transform: scale(1.07) rotate(1deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    @keyframes rise {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+      100% { transform: translateY(-160px) rotate(25deg); opacity: 0; }
+    }
+    @keyframes particle {
+      0%   { transform: translate(0,0) scale(1); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+    }
+    @keyframes heartpop {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+    @keyframes shimmer {
+      0%,100% { opacity: .7; }
+      50%      { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="bg-layer"></div>
+
+<div id="app">
+
+  <!-- ═══════════ SCENE 1: CAKE ═══════════ -->
+  <div id="scene-cake" class="scene active">
+    <p class="eyebrow">from carlo, with love</p>
+    <h1>Happy 19th Birthday,<br><span>Issy 🎂</span></h1>
+
+    <div class="cake-wrap">
+      <svg viewBox="0 0 220 230" width="210" height="210" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="110" cy="214" rx="90" ry="11" fill="#f9d7e5" opacity="0.4"/>
+        <!-- bottom tier -->
+        <rect x="20" y="145" width="180" height="65" rx="14" fill="#f9c6d8"/>
+        <path d="M20 155 Q32 143 44 155 Q56 143 68 155 Q80 143 92 155 Q104 143 116 155 Q128 143 140 155 Q152 143 164 155 Q176 143 188 155 Q200 143 200 145 L200 145 Q188 133 176 145 Q164 133 152 145 Q140 133 128 145 Q116 133 104 145 Q92 133 80 145 Q68 133 56 145 Q44 133 32 145 Q20 133 20 145Z" fill="white" opacity="0.72"/>
+        <!-- mid tier -->
+        <rect x="32" y="100" width="156" height="50" rx="10" fill="#f7b3cc"/>
+        <path d="M32 110 Q44 98 56 110 Q68 98 80 110 Q92 98 104 110 Q116 98 128 110 Q140 98 152 110 Q164 98 176 110 Q188 98 188 100 L188 100 Q176 88 164 100 Q152 88 140 100 Q128 88 116 100 Q104 88 92 100 Q80 88 68 100 Q56 88 44 100 Q32 88 32 100Z" fill="white" opacity="0.7"/>
+        <!-- top tier -->
+        <rect x="52" y="62" width="116" height="42" rx="9" fill="#f5a0c0"/>
+        <path d="M52 72 Q62 60 72 72 Q82 60 92 72 Q102 60 112 72 Q122 60 132 72 Q142 60 152 72 Q162 60 168 62 L168 62 Q158 50 148 62 Q138 50 128 62 Q118 50 108 62 Q98 50 88 62 Q78 50 68 62 Q58 50 52 62Z" fill="white" opacity="0.73"/>
+        <!-- sprinkles -->
+        <rect x="50" y="162" width="7" height="2.5" rx="1.2" fill="#f7a5c2" transform="rotate(30 53 163)"/>
+        <rect x="85" y="168" width="7" height="2.5" rx="1.2" fill="#b5e8c9" transform="rotate(-20 88 169)"/>
+        <rect x="120" y="160" width="7" height="2.5" rx="1.2" fill="#f7a5c2" transform="rotate(50 123 161)"/>
+        <rect x="155" y="166" width="7" height="2.5" rx="1.2" fill="#ffd700" transform="rotate(-10 158 167)"/>
+        <rect x="68" y="178" width="7" height="2.5" rx="1.2" fill="#b5d8f7" transform="rotate(15 71 179)"/>
+        <rect x="140" y="175" width="7" height="2.5" rx="1.2" fill="#b5e8c9" transform="rotate(25 143 176)"/>
+        <rect x="58" y="118" width="6" height="2" rx="1" fill="#ffd700" transform="rotate(-15 61 119)"/>
+        <rect x="100" y="122" width="6" height="2" rx="1" fill="#f7a5c2" transform="rotate(40 103 123)"/>
+        <rect x="145" y="116" width="6" height="2" rx="1" fill="#b5d8f7" transform="rotate(-30 148 117)"/>
+        <!-- hearts -->
+        <text x="36" y="140" font-size="11" fill="#f4a0bc" opacity="0.65">♥</text>
+        <text x="170" y="140" font-size="11" fill="#f4a0bc" opacity="0.65">♥</text>
+        <text x="103" y="197" font-size="10" fill="#f9c6d8" opacity="0.7">♥</text>
+        <!-- candles -->
+        <rect x="76" y="44" width="9" height="22" rx="4" fill="#ffd6e8"/>
+        <rect x="105" y="38" width="9" height="28" rx="4" fill="#ffc1d6"/>
+        <rect x="134" y="44" width="9" height="22" rx="4" fill="#ffb3cc"/>
+        <rect x="76" y="50" width="9" height="2.5" fill="#f4a0bc" opacity="0.45"/>
+        <rect x="76" y="57" width="9" height="2.5" fill="#f4a0bc" opacity="0.45"/>
+        <rect x="105" y="47" width="9" height="2.5" fill="#e891b5" opacity="0.45"/>
+        <rect x="105" y="54" width="9" height="2.5" fill="#e891b5" opacity="0.45"/>
+        <rect x="134" y="50" width="9" height="2.5" fill="#f090b8" opacity="0.45"/>
+        <rect x="134" y="57" width="9" height="2.5" fill="#f090b8" opacity="0.45"/>
+        <!-- flames group (toggled off on blow) -->
+        <g id="flames">
+          <g class="flame" style="transform-origin:80px 44px">
+            <ellipse cx="80" cy="39" rx="4.5" ry="7" fill="#ffdd44" opacity="0.95"/>
+            <ellipse cx="80" cy="41" rx="2.5" ry="4" fill="#ff9900"/>
+            <ellipse cx="80" cy="42" rx="1.2" ry="2" fill="white" opacity="0.55"/>
+          </g>
+          <g class="flame" style="transform-origin:109px 38px">
+            <ellipse cx="109" cy="33" rx="4.5" ry="7" fill="#ffdd44" opacity="0.95"/>
+            <ellipse cx="109" cy="35" rx="2.5" ry="4" fill="#ff9900"/>
+            <ellipse cx="109" cy="36" rx="1.2" ry="2" fill="white" opacity="0.55"/>
+          </g>
+          <g class="flame" style="transform-origin:138px 44px">
+            <ellipse cx="138" cy="39" rx="4.5" ry="7" fill="#ffdd44" opacity="0.95"/>
+            <ellipse cx="138" cy="41" rx="2.5" ry="4" fill="#ff9900"/>
+            <ellipse cx="138" cy="42" rx="1.2" ry="2" fill="white" opacity="0.55"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <p class="eyebrow" style="letter-spacing:0.1em;">Make a wish, princess ✨</p>
+    <button class="btn" id="blow-btn" onclick="blowCandles()">Blow the candles 💨</button>
+  </div>
+
+  <!-- ═══════════ SCENE 2: BOUQUET ═══════════ -->
+  <div id="scene-bouquet" class="scene">
+    <p class="eyebrow">your wish came true 🌸</p>
+    <h2>Lilies for my Issy</h2>
+
+    <div id="bouquet-wrap">
+      <svg viewBox="0 0 230 240" width="220" height="220" xmlns="http://www.w3.org/2000/svg">
+        <line x1="115" y1="235" x2="115" y2="150" stroke="#7db87d" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="115" y1="200" x2="88" y2="172" stroke="#7db87d" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="115" y1="190" x2="142" y2="165" stroke="#7db87d" stroke-width="2.2" stroke-linecap="round"/>
+        <line x1="115" y1="210" x2="70"  y2="195" stroke="#7db87d" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="115" y1="208" x2="160" y2="195" stroke="#7db87d" stroke-width="1.8" stroke-linecap="round"/>
+        <ellipse cx="82"  cy="168" rx="18" ry="7.5" fill="#6db06d" transform="rotate(-40 82 168)"  opacity="0.9"/>
+        <ellipse cx="148" cy="162" rx="18" ry="7.5" fill="#6db06d" transform="rotate(38 148 162)"  opacity="0.9"/>
+        <ellipse cx="62"  cy="192" rx="14" ry="5.5" fill="#7dc07d" transform="rotate(-55 62 192)"  opacity="0.8"/>
+        <ellipse cx="168" cy="192" rx="14" ry="5.5" fill="#7dc07d" transform="rotate(50 168 192)"  opacity="0.8"/>
+        <!-- center lily -->
+        <g>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#fce8f0" transform="rotate(0   115 95)" opacity="0.95"/>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#fce8f0" transform="rotate(60  115 95)" opacity="0.9"/>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#fce8f0" transform="rotate(120 115 95)" opacity="0.88"/>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#f8d0e4" transform="rotate(180 115 95)" opacity="0.85"/>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#f8d0e4" transform="rotate(240 115 95)" opacity="0.85"/>
+          <ellipse cx="115" cy="95" rx="11" ry="32" fill="#f8d0e4" transform="rotate(300 115 95)" opacity="0.85"/>
+          <line x1="115" y1="95" x2="115" y2="65" stroke="#e8a0b8" stroke-width="0.8" opacity="0.45"/>
+          <line x1="115" y1="95" x2="143" y2="111" stroke="#e8a0b8" stroke-width="0.8" opacity="0.45"/>
+          <line x1="115" y1="95" x2="87"  y2="111" stroke="#e8a0b8" stroke-width="0.8" opacity="0.45"/>
+          <circle cx="115" cy="95" r="11" fill="#faeabb"/>
+          <circle cx="115" cy="95" r="5.5" fill="#f4c040"/>
+          <line x1="115" y1="92" x2="115" y2="68" stroke="#e0a0b0" stroke-width="1.3" stroke-linecap="round"/>
+          <line x1="115" y1="92" x2="128" y2="74" stroke="#e0a0b0" stroke-width="1.3" stroke-linecap="round"/>
+          <line x1="115" y1="92" x2="102" y2="74" stroke="#e0a0b0" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="115" cy="66" r="3.5" fill="#d4607a"/>
+          <circle cx="129" cy="72" r="3.5" fill="#d4607a"/>
+          <circle cx="101" cy="72" r="3.5" fill="#d4607a"/>
+        </g>
+        <!-- left lily -->
+        <g opacity="0.88">
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(-18 70 118)" opacity="0.92"/>
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(42  70 118)" opacity="0.88"/>
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(102 70 118)" opacity="0.85"/>
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(162 70 118)" opacity="0.82"/>
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(222 70 118)" opacity="0.82"/>
+          <ellipse cx="70" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(282 70 118)" opacity="0.82"/>
+          <circle cx="70" cy="118" r="8" fill="#faeabb"/>
+          <circle cx="70" cy="118" r="4" fill="#f4c040"/>
+        </g>
+        <!-- right lily -->
+        <g opacity="0.88">
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(18  160 118)" opacity="0.92"/>
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(78  160 118)" opacity="0.88"/>
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#fce8f0" transform="rotate(138 160 118)" opacity="0.85"/>
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(198 160 118)" opacity="0.82"/>
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(258 160 118)" opacity="0.82"/>
+          <ellipse cx="160" cy="118" rx="8" ry="22" fill="#f8d0e4" transform="rotate(318 160 118)" opacity="0.82"/>
+          <circle cx="160" cy="118" r="8" fill="#faeabb"/>
+          <circle cx="160" cy="118" r="4" fill="#f4c040"/>
+        </g>
+        <!-- small buds -->
+        <g opacity="0.75">
+          <ellipse cx="48" cy="155" rx="5" ry="14" fill="#fce8f0" transform="rotate(-25 48 155)"/>
+          <ellipse cx="48" cy="155" rx="5" ry="14" fill="#f8d0e4" transform="rotate(95  48 155)"/>
+          <circle cx="48" cy="155" r="5" fill="#faeabb"/>
+        </g>
+        <g opacity="0.75">
+          <ellipse cx="182" cy="155" rx="5" ry="14" fill="#fce8f0" transform="rotate(25  182 155)"/>
+          <ellipse cx="182" cy="155" rx="5" ry="14" fill="#f8d0e4" transform="rotate(145 182 155)"/>
+          <circle cx="182" cy="155" r="5" fill="#faeabb"/>
+        </g>
+        <!-- ribbon -->
+        <path d="M90 230 Q115 218 140 230 Q130 242 115 240 Q100 242 90 230Z" fill="#f4a0bc" opacity="0.9"/>
+        <path d="M95 229 Q115 221 135 229" stroke="#e0789f" stroke-width="1.5" fill="none"/>
+        <circle cx="115" cy="226" r="4" fill="#e8789f"/>
+      </svg>
+    </div>
+
+    <p class="eyebrow" style="letter-spacing:0.1em;">There's something hidden inside 🎀</p>
+    <button class="btn" style="animation:floatup 2.8s ease-in-out infinite;" onclick="openLetter()">Open the letter ✉️</button>
+  </div>
+
+  <!-- ═══════════ SCENE 3: LETTER ═══════════ -->
+  <div id="scene-letter" class="scene">
+    <div class="heart">♥</div>
+
+    <div class="letter-card">
+      <div class="wax-seal">♥</div>
+      <p class="letter-from">from carlo · to issy · with all my heart</p>
+
+      <p class="letter-greeting">Hiii baby! Happy 19th birthday! 🎂</p>
+
+      <p class="letter-body">I'm so glad you're here and that we finally get to celebrate this day together. Ever since you came into my life, honestly everything just started making sense. You're literally my biggest blessing and I'm so thankful for you being the sweetest, most thoughtful, and most fun person I've ever known.</p>
+
+      <p class="letter-body">You're like my sunshine and rainbows all in one and you make me the happiest person alive just by being you. 🌸</p>
+
+      <p class="letter-body">I really just want to make today as special as you are because you deserve the absolute best and so much more. I want you to know you'll always have me here to value you and make sure every birthday is your best one yet.</p>
+
+      <p class="letter-body">You'll always be my pretty princess, I'm so lucky I met you and I'm never letting you go. 🥹</p>
+
+      <p class="letter-body" style="font-weight:400;font-size:1rem;">I love you the mostesttesttwst. Happy birthday, my baby! ✨</p>
+
+      <div class="letter-sig-line">
+        <p class="letter-sig-label">always yours</p>
+        <p class="letter-sig-name">Carlo 💕</p>
+      </div>
+    </div>
+
+    <div class="sparkle-row">🌸 ✨ 🎂 ✨ 🌸</div>
+    <p class="footer-note">Happy 19th, Issy — you are so loved 💕</p>
+  </div>
+
+</div>
+
+<script>
+  function spawnParticles(cx, cy) {
+    const app = document.getElementById('app');
+    const rect = app.getBoundingClientRect();
+    const colors = ['#f4a0bc','#ffd6e8','#f7b3cc','#d4607a','#fce8f0','#ffd700','#ffffff','#ffb3d4'];
+    for (let i = 0; i < 30; i++) {
+      const d = document.createElement('div');
+      const angle = Math.random() * 360;
+      const dist  = 55 + Math.random() * 95;
+      const tx    = Math.cos(angle * Math.PI / 180) * dist + 'px';
+      const ty    = Math.sin(angle * Math.PI / 180) * dist + 'px';
+      const size  = 4 + Math.random() * 8;
+      d.style.cssText = `
+        position:fixed;
+        left:${cx}px; top:${cy}px;
+        width:${size}px; height:${size}px;
+        border-radius:50%;
+        background:${colors[Math.floor(Math.random() * colors.length)]};
+        pointer-events:none;
+        z-index:9999;
+        --tx:${tx}; --ty:${ty};
+        animation:particle 0.95s ease-out forwards;
+      `;
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 1050);
+    }
+  }
+
+  function spawnFloaties() {
+    const layer = document.getElementById('bg-layer');
+    const items = ['🌸','✨','💕','🌷','🎀','💗','🎊'];
+    for (let i = 0; i < 10; i++) {
+      const p    = document.createElement('div');
+      const left = 5 + Math.random() * 90;
+      const delay= Math.random() * 1;
+      const size = 0.85 + Math.random() * 1.1;
+      p.style.cssText = `
+        position:absolute;
+        left:${left}%; top:20px;
+        font-size:${size}rem;
+        opacity:0.5;
+        animation:rise ${1.4 + Math.random() * 0.9}s ${delay}s ease-out forwards;
+        pointer-events:none;
+      `;
+      p.textContent = items[Math.floor(Math.random() * items.length)];
+      layer.appendChild(p);
+      setTimeout(() => p.remove(), 3000);
+    }
+  }
+
+  function switchScene(hideId, showId) {
+    const hide = document.getElementById(hideId);
+    hide.style.transition = 'opacity 0.35s';
+    hide.style.opacity = '0';
+    setTimeout(() => {
+      hide.classList.remove('active');
+      hide.style.opacity = '';
+      hide.style.transition = '';
+      const show = document.getElementById(showId);
+      show.classList.add('active');
+    }, 370);
+  }
+
+  function blowCandles() {
+    const btn = document.getElementById('blow-btn');
+    btn.textContent = '🌬️ Blowing...';
+    btn.disabled = true;
+
+    const app  = document.getElementById('app');
+    const rect = app.getBoundingClientRect();
+    const cx   = rect.left + rect.width / 2;
+    const cy   = rect.top  + 180;
+
+    spawnParticles(cx, cy);
+    spawnFloaties();
+    setTimeout(() => { spawnParticles(cx - 40, cy - 20); spawnFloaties(); }, 300);
+    setTimeout(() => { spawnParticles(cx + 40, cy - 20); spawnFloaties(); }, 550);
+
+    setTimeout(() => {
+      switchScene('scene-cake', 'scene-bouquet');
+      setTimeout(() => {
+        const wrap = document.getElementById('bouquet-wrap');
+        wrap.classList.add('bloom');
+        spawnFloaties();
+        setTimeout(spawnFloaties, 500);
+      }, 100);
+    }, 1000);
+  }
+
+  function openLetter() {
+    const app  = document.getElementById('app');
+    const rect = app.getBoundingClientRect();
+    const cx   = rect.left + rect.width / 2;
+    const cy   = rect.top  + rect.height / 2;
+
+    spawnParticles(cx, cy);
+    spawnFloaties();
+    setTimeout(() => { spawnParticles(cx, cy); spawnFloaties(); }, 380);
+    setTimeout(() => spawnFloaties(), 700);
+
+    switchScene('scene-bouquet', 'scene-letter');
+    setTimeout(spawnFloaties, 500);
+    setTimeout(spawnFloaties, 950);
+  }
+</script>
+
+</body>
+</html>
